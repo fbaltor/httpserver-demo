@@ -2,6 +2,7 @@ var http = require('http');
 var url = require('url');
 var fs = require('fs');
 var path = require('path');
+var mime = require('mime');
 
 // http://localhost:2666/
 var port = 2666;
@@ -11,25 +12,25 @@ var basedir = process.cwd();
 
 var server;
 
-// naive getMIMEType implementation
-function getMIMEType(filename) {
-  var mimeTypes = {
-    '.js': 'application/javascript',
-    '.jpg': 'image/jpg',
-    '.png': 'image/png',
-    '.html': 'text/html'
-  };
-
-  // get the file extension
-  var ext = path.extname(filename);
-
-  if (ext in mimeTypes) {
-    return mimeTypes[ext];
-  }
-
-  // if MIME type is not recognized, return the default above
-  return 'text/plain';
-}
+//// naive getMIMEType implementation
+//function getMIMEType(filename) {
+//  var mimeTypes = {
+//    '.js': 'application/javascript',
+//    '.jpg': 'image/jpg',
+//    '.png': 'image/png',
+//    '.html': 'text/html'
+//  };
+//
+//  // get the file extension
+//  var ext = path.extname(filename);
+//
+//  if (ext in mimeTypes) {
+//    return mimeTypes[ext];
+//  }
+//
+//  // if MIME type is not recognized, return the default above
+//  return 'text/plain';
+//}
 
 // locate the filename for a specifc path
 function getFilenameFromPath(filepath, callback) {
@@ -103,7 +104,7 @@ function httpHandler(request, response) {
           writeError(err);
         } else {
           //no errors reading the file, proceed and get the MIME type
-          var mimeType = getMIMEType(filename);
+          var mimeType = mime.getType(mime.getExtension(filename));
           response.writeHead(200, { "Content-type": mimeType });
           response.write(file, "binary");
           response.end();
